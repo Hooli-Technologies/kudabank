@@ -1,0 +1,23 @@
+{
+  "name": "aptp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "execute": "npx ts-node ",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/node": "^16.7.6",
+    "dotenv": "^10.0.0",
+    "kuda-node": "^1.0.3",
+    "shortid": "^2.2.16",
+    "ts-node": "^10.2.1"
+  },
+  "devDependencies": {
+    "typescript": "^4.4.2"
+  }
+}
