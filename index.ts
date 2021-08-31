@@ -1,11 +1,8 @@
 require('dotenv').config()
 const kudaBank = require('./src/kuda.ts')
 
-const k = new kudaBank(process.env.PRIVATE_KEY_PATH)
-k.getAccountBalance('vAcc-xIA_27ft1s').then((r:any) => {
-    console.log({ r })
-})
+const k = new kudaBank(process.env.PRIVATE_KEY_PATH, process.env.PUBLIC_KEY_PATH)
 
-k.fundVirtualAccount('vAcc-xIA_27ft1s', 40000, 'Some experiment').then((r:any) => {
-    console.log({ r })
+k.createVirtualAccount('Ibrahim', 'Abdullahi', 'ibrahim@hooli.ng', '09033366611').then((result: Object) => {
+    console.log({ result })
 })
