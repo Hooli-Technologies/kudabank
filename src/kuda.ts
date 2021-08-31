@@ -2,6 +2,8 @@ const fs = require("fs")
 const shortid = require("shortid");
 const kuda = require('kuda-node');
 
+import { VirtualAccountDetail } from "./interface";
+
 class KudaBank {
 
     instance: any
@@ -33,7 +35,7 @@ class KudaBank {
         )
     }
 
-    createVirtualAccount(firstName: String, lastName: String, email: String, phoneNumber: String, trackingPrefix = 'VIRTUAL-') {
+    createVirtualAccount(firstName: String, lastName: String, email: String, phoneNumber: String, trackingPrefix = 'VIRTUAL-') : Promise<VirtualAccountDetail> {
         return this.call('ADMIN_CREATE_VIRTUAL_ACCOUNT', {
             firstName,
             lastName,
@@ -68,7 +70,7 @@ class KudaBank {
          * Implement this function to execute a transfer either from a virtual account is @param from is provided,
          * or from the main account if from is not provided
          *
-         * Not that transfer includes
+         * Note that transfer includes
          * 1. NAME_ENQUIRY
          * 2. SINGLE_FUND_TRANSFER
          */
