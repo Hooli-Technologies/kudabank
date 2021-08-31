@@ -1,5 +1,5 @@
 require('dotenv').config()
-const kudaBank = require('./kuda.ts')
+const kudaBank = require('./src/kuda.ts')
 
 const k = new kudaBank(process.env.PRIVATE_KEY_PATH)
 k.getAccountBalance('vAcc-xIA_27ft1s').then((r:any) => {

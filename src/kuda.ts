@@ -6,7 +6,7 @@ class KudaBank {
 
     instance: any
 
-    constructor(privateKeyFile: String, publicKeyFile: String = './secrets/kuda.public.xml') {
+    constructor(privateKeyFile: String, publicKeyFile: String = process.env.PUBLIC_KEY_PATH) {
 
         let clientKey: String = privateKeyFile.split('/')?.pop() || ""
         clientKey = clientKey.split('.')[0]
