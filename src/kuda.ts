@@ -64,7 +64,38 @@ class KudaBank {
         })
     }
 
-    sendMoney(amount: String, beneficiaryAccountNumber: String, beneficiaryName: String, bankName: String, from?: String) {
+   private async getBankCode(bankName: String) {
+        bankName.toLowerCase().trim()
+        const banks = await this.call('BANK_LIST');
+        const name: Function = (): String => {
+            if (bankName == 'gtb' || 'gt bank' || 'gtbank' || 'guarantee trust bank') return 'GTBank';
+            if (bankName == 'first bank' || 'fb' || 'first' || 'firstbank') return 'First Bank';
+            if (bankName == 'Access bank' || 'Access' || 'accessbank') return 'Access Bank';
+            return 'Kudimoney(Kudabank)'
+        }
+       
+        return banks.Data.banks.find((bank: any) => bank.bankName === name());
+
+   }
+    
+    private async enquireName(
+        baneficiaryAccNo: string,
+        beneficiaryBankCode: String,
+        SenderTrackingReference: String | null,
+        isRequestFromVirtualAccount: Boolean
+    ) {
+        return this.call('NAME_ENQUIRY', {
+            beneficiaryAccountNumber: baneficiaryAccNo,
+            beneficiaryBankCode,
+            SenderTrackingReference,
+            isRequestFromVirtualAccount
+
+        })
+    }
+    
+    
+
+    sendMoney(amount: number, beneficiaryAccountNumber: String, beneficiaryName: String, bankName: String, from?: String) {
         /**
          * Implement this function to execute a transfer either from a virtual account is @param from is provided,
          * or from the main account if from is not provided
