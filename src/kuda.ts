@@ -2,6 +2,7 @@ const fs = require("fs")
 const shortid = require("shortid");
 const kuda = require('kuda-node');
 
+import { threadId } from "worker_threads";
 import { VirtualAccountDetail } from "./interface";
 
 class KudaBank {
@@ -78,34 +79,58 @@ class KudaBank {
 
    }
     
-    private async enquireName(
+     async enquireName(
         baneficiaryAccNo: string,
         beneficiaryBankCode: String,
         SenderTrackingReference: String | null,
-        isRequestFromVirtualAccount: Boolean
+        isRequestFromVirtualAccount: Boolean,
+        name: string
     ) {
-        return this.call('NAME_ENQUIRY', {
+       const beneficiary = await this.call('NAME_ENQUIRY', {
             beneficiaryAccountNumber: baneficiaryAccNo,
             beneficiaryBankCode,
             SenderTrackingReference,
             isRequestFromVirtualAccount
 
-        })
+       })
+        const res= []
+         const allNames = name.toLowerCase().trim().split(' ');
+         for (const name in allNames) {
+             res.push(beneficiary.Data.BeneficiaryName.toLowerCase().includes(allNames[name].toLowerCase()))
+         }
+         if(res.includes(false)) throw new Error('Beneficiary name does not match')
+         return res
     }
     
+    async sendMoney(amount: Number, beneficiaryAccountNumber: String, beneficiaryName: String, bankName: String, nameEnquirySessionID: String, senderName: String, from?: String, narration?: String) {
+        const banks = await this.getBankCode(bankName);
     
+        return this.call(
+            from ? 'VIRTUAL_ACCOUNT_FUND_TRANSFER' : 'SINGLE_FUND_TRANSFER',
+            {
+                amount,
+                beneficiaryAccountNumber,
+                beneficiarybankCode: this.getBankCode(bankName),
+                beneficiaryName,
+                narration,
+                nameEnquirySessionID,
+                senderName
+            }
+        )
+        
+    }
 
-    sendMoney(amount: number, beneficiaryAccountNumber: String, beneficiaryName: String, bankName: String, from?: String) {
-        /**
-         * Implement this function to execute a transfer either from a virtual account is @param from is provided,
-         * or from the main account if from is not provided
-         *
-         * Note that transfer includes
-         * 1. NAME_ENQUIRY
-         * 2. SINGLE_FUND_TRANSFER
-         */
-        throw Error('Not implemented')
-    }
+    // sendMoney(amount: number, beneficiaryAccountNumber: String, beneficiaryName: String, bankName: String, from?: String) {
+    //     /**
+    //      * Implement this function to execute a transfer either from a virtual account is @param from is provided,
+    //      * or from the main account if from is not provided
+    //      *
+    //      * Note that transfer includes
+    //      * 1. NAME_ENQUIRY
+    //      * 2. SINGLE_FUND_TRANSFER
+    //      */
+    //     throw Error('Not implemented')
+    // }
 }
 
 module.exports = KudaBank
