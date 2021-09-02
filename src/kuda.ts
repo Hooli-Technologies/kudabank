@@ -80,11 +80,11 @@ class KudaBank {
    }
     
      async enquireName(
-        baneficiaryAccNo: string,
-        beneficiaryBankCode: String,
-        SenderTrackingReference: String | null,
-        isRequestFromVirtualAccount: Boolean,
-        name: string
+        baneficiaryAccNo: String,
+         beneficiaryBankCode: String,
+         isRequestFromVirtualAccount: Boolean,
+         name: String,
+        SenderTrackingReference?: String        
     ) {
        const beneficiary = await this.call('NAME_ENQUIRY', {
             beneficiaryAccountNumber: baneficiaryAccNo,
@@ -99,38 +99,39 @@ class KudaBank {
              res.push(beneficiary.Data.BeneficiaryName.toLowerCase().includes(allNames[name].toLowerCase()))
          }
          if(res.includes(false)) throw new Error('Beneficiary name does not match')
-         return res
+         return beneficiary;
     }
     
-    async sendMoney(amount: Number, beneficiaryAccountNumber: String, beneficiaryName: String, bankName: String, nameEnquirySessionID: String, senderName: String, from?: String, narration?: String) {
-        const banks = await this.getBankCode(bankName);
+    async sendMoney(
+        amount: Number,
+        beneficiaryAccountNumber: String,
+        bankName: String,
+        senderName: String,
+        SenderTrackingReference: String,
+        isRequestFromVirtualAccount: Boolean,
+        from?: String,
+        narration?: String,
+    ) {
+        const bank = await this.getBankCode(bankName);
+        const beneficiary = await this.enquireName(beneficiaryAccountNumber, bank.bankCode,  isRequestFromVirtualAccount, senderName, SenderTrackingReference,)
     
         return this.call(
             from ? 'VIRTUAL_ACCOUNT_FUND_TRANSFER' : 'SINGLE_FUND_TRANSFER',
             {
+                beneficiarybankCode: bank.bankCode,
+                beneficiaryAccount: beneficiaryAccountNumber,
+                beneficiaryName: beneficiary.BeneficiaryName,
                 amount,
-                beneficiaryAccountNumber,
-                beneficiarybankCode: this.getBankCode(bankName),
-                beneficiaryName,
                 narration,
-                nameEnquirySessionID,
-                senderName
+                nameEnquirySessionID: beneficiary.SessionID,
+                trackingReference: 'RANDOM STRING',
+                senderName,
+                nameEnquiryId: beneficiary.SessionID
             }
         )
         
     }
 
-    // sendMoney(amount: number, beneficiaryAccountNumber: String, beneficiaryName: String, bankName: String, from?: String) {
-    //     /**
-    //      * Implement this function to execute a transfer either from a virtual account is @param from is provided,
-    //      * or from the main account if from is not provided
-    //      *
-    //      * Note that transfer includes
-    //      * 1. NAME_ENQUIRY
-    //      * 2. SINGLE_FUND_TRANSFER
-    //      */
-    //     throw Error('Not implemented')
-    // }
 }
 
 module.exports = KudaBank
