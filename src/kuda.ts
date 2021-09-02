@@ -2,8 +2,7 @@ const fs = require("fs")
 const shortid = require("shortid");
 const kuda = require('kuda-node');
 
-import { threadId } from "worker_threads";
-import { VirtualAccountDetail } from "./interface";
+import { VirtualAccountDetail, BankObject, Beneficiary } from './interface';
 
 class KudaBank {
 
@@ -45,7 +44,7 @@ class KudaBank {
         })
     }
 
-    getVirtualAccountNumberDetails(trackingReference: String) {
+    getVirtualAccountNumberDetails(trackingReference: String):Promise<VirtualAccountDetail> {
         return this.call('ADMIN_RETRIEVE_SINGLE_VIRTUAL_ACCOUNT', {trackingReference})
     }
 
@@ -65,7 +64,7 @@ class KudaBank {
         })
     }
 
-   private async getBankCode(bankName: String) {
+    private async getBankCode(bankName: String): Promise<BankObject>{
         bankName.toLowerCase().trim()
         const banks = await this.call('BANK_LIST');
         const name: Function = (): String => {
@@ -85,7 +84,7 @@ class KudaBank {
          isRequestFromVirtualAccount: Boolean,
          name: String,
         SenderTrackingReference?: String        
-    ) {
+    ): Promise<Beneficiary> {
        const beneficiary = await this.call('NAME_ENQUIRY', {
             beneficiaryAccountNumber: baneficiaryAccNo,
             beneficiaryBankCode,
