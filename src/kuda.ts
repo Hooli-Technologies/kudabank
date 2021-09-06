@@ -68,9 +68,10 @@ class KudaBank {
         bankName.toLowerCase().trim()
         const banks = await this.call('BANK_LIST');
         const name: Function = (): String => {
-            if (bankName == 'gtb' || 'gt bank' || 'gtbank' || 'guarantee trust bank') return 'GTBank';
-            if (bankName == 'first bank' || 'fb' || 'first' || 'firstbank') return 'First Bank';
-            if (bankName == 'Access bank' || 'Access' || 'accessbank') return 'Access Bank';
+            if (bankName == ('gtb' || 'gt bank' || 'gtbank' || 'guarantee trust bank')) return 'GTBank';
+            if (bankName == ('first bank' || 'fb' || 'first' || 'firstbank')) return 'First Bank';
+            if (bankName == ('Access bank' || 'Access' || 'accessbank')) return 'Access Bank';
+            if((bankName == 'Kudimoney(Kudabank)' || 'Kudabank' || 'kuda')) return 'Kudimoney(Kudabank)'
             return 'Kudimoney(Kudabank)'
         }
        
@@ -85,12 +86,11 @@ class KudaBank {
          name: String,
         SenderTrackingReference?: String        
     ): Promise<Beneficiary> {
-       const beneficiary = await this.call('NAME_ENQUIRY', {
+        const beneficiary = await this.call('NAME_ENQUIRY', {
             beneficiaryAccountNumber: baneficiaryAccNo,
             beneficiaryBankCode,
             SenderTrackingReference,
             isRequestFromVirtualAccount
-
        })
         const res= []
          const allNames = name.toLowerCase().trim().split(' ');
@@ -105,15 +105,20 @@ class KudaBank {
         amount: Number,
         beneficiaryAccountNumber: String,
         bankName: String,
+        beneficiaryName: String,
         senderName: String,
         SenderTrackingReference: String,
         isRequestFromVirtualAccount: Boolean,
-        from?: String,
+        from: String,
         narration?: String,
     ) {
-        const bank = await this.getBankCode(bankName);
-        const beneficiary = await this.enquireName(beneficiaryAccountNumber, bank.bankCode,  isRequestFromVirtualAccount, senderName, SenderTrackingReference,)
-    
+        const bank: BankObject = await this.getBankCode(bankName);
+        const beneficiary: Beneficiary = await this.enquireName(beneficiaryAccountNumber, bank.bankCode, isRequestFromVirtualAccount, beneficiaryName, SenderTrackingReference,)
+        
+        // console.log('bank', bank);
+        // console.log('ben', beneficiary);
+        
+        
         return this.call(
             from ? 'VIRTUAL_ACCOUNT_FUND_TRANSFER' : 'SINGLE_FUND_TRANSFER',
             {
@@ -123,7 +128,7 @@ class KudaBank {
                 amount,
                 narration,
                 nameEnquirySessionID: beneficiary.SessionID,
-                trackingReference: 'RANDOM STRING',
+                trackingReference: SenderTrackingReference,
                 senderName,
                 nameEnquiryId: beneficiary.SessionID
             }

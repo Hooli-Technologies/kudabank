@@ -16,6 +16,25 @@ interface Account {
     }
 }
 
+export interface BankObject {
+    bankName: String,
+    bankCode: String
+}
+
+export interface Beneficiary {
+    BeneficiaryAccountNumber: String,
+    BeneficiaryName: String,
+    SenderAccountNumber: String | null,
+    SenderName: String | null,
+    BeneficiaryCustomerID: Number,
+    BeneficiaryBankCode: String,
+    NameEnquiryID: Number,
+    ResponseCode: String | null,
+    TransferCharge: Number | null,
+    SessionID: String
+}
+
 export interface VirtualAccountDetail extends KudaApiReturn {
     Data: Account
 }
+
