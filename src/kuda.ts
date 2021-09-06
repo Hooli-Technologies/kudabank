@@ -2,7 +2,7 @@ const fs = require("fs")
 const shortid = require("shortid");
 const kuda = require('kuda-node');
 
-import { VirtualAccountDetail, BankObject, Beneficiary } from './interface';
+import { VirtualAccountDetail, BankObject, Beneficiary, SendMoney } from './interface';
 
 class KudaBank {
 
@@ -111,7 +111,7 @@ class KudaBank {
         isRequestFromVirtualAccount: Boolean,
         from: String,
         narration?: String,
-    ) {
+    ): Promise<SendMoney> {
         const bank: BankObject = await this.getBankCode(bankName);
         const beneficiary: Beneficiary = await this.enquireName(beneficiaryAccountNumber, bank.bankCode, isRequestFromVirtualAccount, beneficiaryName, SenderTrackingReference,)
         

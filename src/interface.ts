@@ -34,6 +34,15 @@ export interface Beneficiary {
     SessionID: String
 }
 
+export interface SendMoney {
+    RequestReference: String,
+    TransactionReference: String,
+    ResponseCode: String,
+    Status: Boolean,
+    Message: String,
+    Data: null
+}
+
 export interface VirtualAccountDetail extends KudaApiReturn {
     Data: Account
 }
